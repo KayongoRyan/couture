@@ -4,48 +4,43 @@ CoutureLaFleur is a premium Rwandan luxury fashion brand inspired by French cout
 
 ## Project Structure
 
-- **Frontend**: React 19, Tailwind CSS, Framer Motion (via standard CSS animations for this demo)
+- **Frontend**: React 18, Tailwind CSS, Framer Motion (via standard CSS animations for this demo)
 - **State Management**: React Context API (Cart & Theme)
 - **Styling**: Utility-first CSS with a custom luxury configuration
+- **Build Tool**: Vite
 
 ## How to Push to GitHub
 
-Since this is a new project, follow these steps to push it to your repository:
+To push this project to your repository (couture), run these commands in your terminal:
 
-1. **Initialize Git**
-   Open your terminal in this project folder and run:
+1. **Initialize & Commit**
    ```bash
    git init
-   ```
-
-2. **Add Files**
-   Stage all files for the first commit:
-   ```bash
    git add .
-   ```
-
-3. **Commit**
-   Save your changes:
-   ```bash
    git commit -m "Initial launch of CoutureLaFleur"
    ```
 
-4. **Connect to Repository**
-   Link your local project to the GitHub repository you provided:
-   ```bash
-   git remote add origin https://github.com/KayongoRyan/lafleur.git
-   ```
-
-5. **Push Code**
-   Upload your code to the main branch:
+2. **Connect to Repository**
    ```bash
    git branch -M main
+   git remote remove origin
+   git remote add origin https://github.com/KayongoRyan/couture.git
+   ```
+
+3. **Push Code**
+   ```bash
    git push -u origin main
    ```
 
 ## Development
 
-To run this project locally (if using a standard Node environment):
+To run this project locally:
 
 1. `npm install`
-2. `npm start`
+2. `npm run dev`
+
+## Deployment
+
+To deploy to Vercel or Netlify:
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`

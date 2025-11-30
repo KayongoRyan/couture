@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CartProvider } from './context/CartContext';
 import { Header } from './components/Header';
@@ -19,12 +19,23 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Placeholder for Magazine (reusing layout styles for simplicity in demo)
+// Placeholder for Magazine
 const MagazinePlaceholder = () => (
     <div className="pt-32 min-h-screen max-w-7xl mx-auto px-6 text-center">
         <h1 className="font-serif text-5xl text-shadow dark:text-smoke mb-8">Le Journal</h1>
         <p className="text-shadow/60">Curated stories coming soon.</p>
     </div>
+);
+
+// Layout Wrapper
+const PublicLayout = () => (
+  <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+    <Header />
+    <main className="flex-grow w-full">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
 );
 
 const App: React.FC = () => {
@@ -33,21 +44,18 @@ const App: React.FC = () => {
       <CartProvider>
         <Router>
           <ScrollToTop />
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/collections" element={<Shop />} />
-                <Route path="/story" element={<Story />} />
-                <Route path="/film" element={<Film />} />
-                <Route path="/magazine" element={<MagazinePlaceholder />} />
-                <Route path="/cart" element={<Checkout />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
+          <Routes>
+            {/* Public Routes Only */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/collections" element={<Shop />} />
+              <Route path="/story" element={<Story />} />
+              <Route path="/film" element={<Film />} />
+              <Route path="/magazine" element={<MagazinePlaceholder />} />
+              <Route path="/cart" element={<Checkout />} />
+            </Route>
+          </Routes>
         </Router>
       </CartProvider>
     </ThemeProvider>

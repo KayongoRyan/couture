@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -48,7 +49,9 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-shadow/10 dark:border-smoke/10">
-          <p className="text-xs text-shadow/40 dark:text-smoke/40 uppercase tracking-widest">© 2024 CoutureLaFleur. Kigali — Paris.</p>
+          <div className="flex items-center gap-4 mt-4 md:mt-0">
+             <p className="text-xs text-shadow/40 dark:text-smoke/40 uppercase tracking-widest">© 2024 CoutureLaFleur. Kigali — Paris.</p>
+          </div>
           <div className="flex space-x-6 mt-4 md:mt-0 text-xs text-shadow/40 dark:text-smoke/40 uppercase tracking-widest">
             <span>Instagram</span>
             <span>Pinterest</span>
