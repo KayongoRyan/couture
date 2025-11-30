@@ -1,11 +1,51 @@
-<div align="center">
+# CoutureLaFleur
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+CoutureLaFleur is a premium Rwandan luxury fashion brand inspired by French couture and African aesthetics, featuring an immersive story-driven shopping experience.
 
-  <h1>Built with AI Studio</h2>
+## Project Structure
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- **Frontend**: React 19, Tailwind CSS, Framer Motion (via standard CSS animations for this demo)
+- **State Management**: React Context API (Cart & Theme)
+- **Styling**: Utility-first CSS with a custom luxury configuration
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## How to Push to GitHub
 
-</div>
+Since this is a new project, follow these steps to push it to your repository:
+
+1. **Initialize Git**
+   Open your terminal in this project folder and run:
+   ```bash
+   git init
+   ```
+
+2. **Add Files**
+   Stage all files for the first commit:
+   ```bash
+   git add .
+   ```
+
+3. **Commit**
+   Save your changes:
+   ```bash
+   git commit -m "Initial launch of CoutureLaFleur"
+   ```
+
+4. **Connect to Repository**
+   Link your local project to the GitHub repository you provided:
+   ```bash
+   git remote add origin https://github.com/KayongoRyan/lafleur.git
+   ```
+
+5. **Push Code**
+   Upload your code to the main branch:
+   ```bash
+   git branch -M main
+   git push -u origin main
+   ```
+
+## Development
+
+To run this project locally (if using a standard Node environment):
+
+1. `npm install`
+2. `npm start`
