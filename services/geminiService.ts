@@ -1,5 +1,4 @@
-
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Helper to safely access environment variables in browser/node
 const getApiKey = () => {
@@ -22,7 +21,7 @@ const getApiKey = () => {
 // Initialize the API client
 const apiKey = getApiKey();
 // We pass the key if it exists, otherwise the service handles the missing key gracefully inside the function
-const ai = new GoogleGenAI({ apiKey: apiKey || 'dummy_key_for_init' });
+const genAI = new GoogleGenerativeAI(apiKey || 'dummy_key_for_init');
 
 export const getStylingAdvice = async (productName: string): Promise<string> => {
   const currentKey = getApiKey();
@@ -32,11 +31,11 @@ export const getStylingAdvice = async (productName: string): Promise<string> => 
   }
 
   try {
-    // Re-initialize with valid key if needed, though usually one global instance is fine
-    // For safety in this specific call context:
-    const activeAi = new GoogleGenAI({ apiKey: currentKey });
+    // Re-initialize with valid key
+    const activeGenAI = new GoogleGenerativeAI(currentKey);
     
-    const model = 'gemini-2.5-flash';
+    const model = activeGenAI.getGenerativeModel({ model: "gemini-pro" });
+    
     const prompt = `
       You are a high-end fashion stylist for 'CoutureLaFleur', a luxury Rwandan-French fashion house.
       The brand essence is minimal, elegant, poetic, and deeply cultural.
@@ -46,12 +45,11 @@ export const getStylingAdvice = async (productName: string): Promise<string> => 
       Tone: Sophisticated, whisper-quiet luxury.
     `;
 
-    const response = await activeAi.models.generateContent({
-      model: model,
-      contents: prompt,
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    return response.text || "Elegance is the only beauty that never fades.";
+    return text || "Elegance is the only beauty that never fades.";
   } catch (error) {
     console.error("Gemini API Error:", error);
     return "True style whispers.";
