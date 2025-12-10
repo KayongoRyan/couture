@@ -36,5 +36,14 @@
     "vite": "^5.2.0"
   },
   "author": "CoutureLaFleur",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KayongoRyan/couture.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/KayongoRyan/couture/issues"
+  },
+  "homepage": "https://github.com/KayongoRyan/couture#readme"
 }
