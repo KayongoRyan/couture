@@ -7,7 +7,7 @@ import { MOCK_PRODUCTS, MOCK_ARTICLES } from './constants';
 import { Product, CartItem, PaymentMethod, MobileProvider } from './types';
 import { Play, ArrowRight, Star, Smartphone, Check, BookOpen, Film as FilmIcon, MapPin, Mail, Phone, Clock, Truck, ShieldCheck, RefreshCw, Heart, AlertCircle } from 'lucide-react';
 import { getStylingAdvice } from './services/geminiService';
-import { fetchProducts, fetchProductById, fetchRecommendations, likeProduct, processPayment } from './services/api';
+import { fetchProducts, fetchProductById, fetchRecommendations, likeProduct, processPayment, sendContactForm } from './services/api';
 
 // --- PAGE COMPONENTS ---
 
@@ -334,62 +334,161 @@ const Film = () => {
 };
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage(null);
+    
+    try {
+      const result = await sendContactForm(formData);
+      
+      if (result.success) {
+        setSubmitMessage({ type: 'success', message: result.message });
+        setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitMessage({ type: 'error', message: result.message || 'Failed to send message. Please try again.' });
+      }
+    } catch (error) {
+      setSubmitMessage({ type: 'error', message: 'An error occurred. Please try again later.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="pt-32 pb-20">
-      <SectionTitle subtitle="Client Services">Contact Us</SectionTitle>
+    <div className="pt-24 md:pt-32 pb-20 min-h-screen">
       <Section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          <div className="space-y-12">
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Kigali Atelier</h3>
-              <p className="opacity-70 leading-relaxed mb-4">
-                KG 14 Ave, Heights Manor<br/>
-                Kigali, Rwanda
-              </p>
-              <div className="flex items-center gap-3 opacity-60 text-sm">
-                <Phone size={14} /> <span>+250 788 000 000</span>
+        <SectionTitle subtitle="Client Services">Contact Us</SectionTitle>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
+          {/* Contact Information */}
+          <div className="space-y-10 md:space-y-12">
+            <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="p-3 bg-gold/10 dark:bg-antique/10 rounded-full">
+                  <MapPin className="text-gold dark:text-antique" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-2xl md:text-3xl mb-3">Visit Us</h3>
+                  <p className="opacity-80 leading-relaxed mb-2">
+                    KK 454 St.<br/>
+                    Kigali, Rwanda
+                  </p>
+                </div>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Paris Studio</h3>
-              <p className="opacity-70 leading-relaxed mb-4">
-                45 Rue du Faubourg Saint-Honoré<br/>
-                75008 Paris, France
-              </p>
-              <div className="flex items-center gap-3 opacity-60 text-sm">
-                <Phone size={14} /> <span>+33 1 40 00 00 00</span>
+
+            <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="p-3 bg-gold/10 dark:bg-antique/10 rounded-full">
+                  <Phone className="text-gold dark:text-antique" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-2xl md:text-3xl mb-3">Call Us</h3>
+                  <a 
+                    href="tel:+250792772202" 
+                    className="block opacity-80 hover:opacity-100 hover:text-gold dark:hover:text-antique transition-all text-lg md:text-xl font-medium"
+                  >
+                    +250 792 772 202
+                  </a>
+                  <p className="text-sm opacity-60 mt-2">Available Mon - Fri: 9am - 6pm</p>
+                </div>
               </div>
             </div>
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Inquiries</h3>
-              <div className="flex items-center gap-3 opacity-60 text-sm mb-2">
-                <Mail size={14} /> <span>concierge@couturelafleur.com</span>
+
+            <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="p-3 bg-gold/10 dark:bg-antique/10 rounded-full">
+                  <Mail className="text-gold dark:text-antique" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-serif text-2xl md:text-3xl mb-3">Email Us</h3>
+                  <a 
+                    href="mailto:couturelafleur19@gmail.com" 
+                    className="block opacity-80 hover:opacity-100 hover:text-gold dark:hover:text-antique transition-all text-lg md:text-xl break-all"
+                  >
+                    couturelafleur19@gmail.com
+                  </a>
+                  <p className="text-sm opacity-60 mt-2">We respond within 24 hours</p>
+                </div>
               </div>
-              <div className="flex items-center gap-3 opacity-60 text-sm">
-                <Clock size={14} /> <span>Mon - Fri: 9am - 6pm</span>
-              </div>
+            </div>
+
+            <div className="flex items-center gap-3 text-sm opacity-70 pt-4">
+              <Clock size={16} />
+              <span>Business Hours: Monday - Friday, 9:00 AM - 6:00 PM (Rwanda Time)</span>
             </div>
           </div>
           
-          <div className="bg-champagne/10 dark:bg-charcoal/50 p-8 md:p-12">
-            <h3 className="font-serif text-2xl mb-8">Send a Message</h3>
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="First Name" />
-                <Input placeholder="Last Name" />
+          {/* Contact Form */}
+          <div className="bg-champagne/10 dark:bg-charcoal/50 p-6 md:p-10 lg:p-12 rounded-lg border border-shadow/10 dark:border-smoke/10">
+            <h3 className="font-serif text-2xl md:text-3xl mb-2">Send a Message</h3>
+            <p className="text-sm opacity-70 mb-8">Fill out the form below and we'll get back to you as soon as possible.</p>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input 
+                  placeholder="First Name" 
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  required
+                />
+                <Input 
+                  placeholder="Last Name" 
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                  required
+                />
               </div>
-              <Input placeholder="Email Address" />
-              <Input placeholder="Subject" />
+              <Input 
+                type="email"
+                placeholder="Email Address" 
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                required
+              />
+              <Input 
+                placeholder="Subject" 
+                value={formData.subject}
+                onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                required
+              />
               <div className="flex flex-col gap-2 w-full">
                 <label className="text-xs uppercase tracking-widest text-shadow/60 dark:text-smoke/60">Message</label>
                 <textarea 
-                  rows={5}
+                  rows={6}
                   className="bg-transparent border-b border-shadow/20 py-2 text-sm focus:border-gold focus:outline-none transition-colors dark:border-smoke/20 dark:text-smoke dark:focus:border-antique placeholder:text-shadow/30 dark:placeholder:text-smoke/30 resize-none"
                   placeholder="How can we assist you?"
+                  value={formData.message}
+                  onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  required
                 />
               </div>
-              <Button fullWidth>Send Inquiry</Button>
-            </div>
+              
+              {submitMessage && (
+                <div className={`p-4 border text-sm rounded ${
+                  submitMessage.type === 'success'
+                    ? 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400'
+                    : 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400'
+                }`}>
+                  {submitMessage.message}
+                </div>
+              )}
+              
+              <Button fullWidth type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Send Inquiry'}
+              </Button>
+            </form>
           </div>
         </div>
       </Section>
@@ -399,46 +498,101 @@ const Contact = () => {
 
 const Shipping = () => {
   return (
-    <div className="pt-32 pb-20">
-      <SectionTitle subtitle="Policies">Shipping & Returns</SectionTitle>
+    <div className="pt-24 md:pt-32 pb-20 min-h-screen">
       <Section>
-        <div className="max-w-3xl mx-auto space-y-16">
-          <div className="flex gap-6 items-start">
-            <Truck size={32} className="text-gold shrink-0 mt-1" />
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Global Delivery</h3>
-              <p className="opacity-80 leading-relaxed mb-4">
-                We are pleased to offer complimentary express shipping on all orders over $500. 
-                All international shipments are handled via DHL Express to ensure your pieces arrive safely and promptly.
-              </p>
-              <ul className="list-disc pl-5 opacity-70 space-y-2 text-sm">
-                <li>Europe & USA: 3-5 Business Days</li>
-                <li>Asia & Middle East: 5-7 Business Days</li>
-                <li>Africa: 2-4 Business Days</li>
-              </ul>
+        <SectionTitle subtitle="Policies">Shipping & Returns</SectionTitle>
+        
+        <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
+          {/* Global Delivery */}
+          <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10 hover:shadow-lg transition-shadow">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              <div className="p-4 bg-gold/10 dark:bg-antique/10 rounded-full shrink-0">
+                <Truck size={32} className="text-gold dark:text-antique" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-serif text-2xl md:text-3xl mb-4">Global Delivery</h3>
+                <p className="opacity-80 leading-relaxed mb-6 text-base md:text-lg">
+                  We are pleased to offer complimentary express shipping on all orders over $500. 
+                  All international shipments are handled via DHL Express to ensure your pieces arrive safely and promptly.
+                </p>
+                <div className="bg-white/50 dark:bg-ebony/50 p-6 rounded-lg">
+                  <h4 className="text-sm uppercase tracking-widest mb-4 text-gold dark:text-antique">Estimated Delivery Times</h4>
+                  <ul className="space-y-3 opacity-80">
+                    <li className="flex justify-between items-center border-b border-shadow/10 dark:border-smoke/10 pb-2">
+                      <span className="font-medium">Europe & USA</span>
+                      <span className="text-gold dark:text-antique">3-5 Business Days</span>
+                    </li>
+                    <li className="flex justify-between items-center border-b border-shadow/10 dark:border-smoke/10 pb-2">
+                      <span className="font-medium">Asia & Middle East</span>
+                      <span className="text-gold dark:text-antique">5-7 Business Days</span>
+                    </li>
+                    <li className="flex justify-between items-center">
+                      <span className="font-medium">Africa</span>
+                      <span className="text-gold dark:text-antique">2-4 Business Days</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex gap-6 items-start">
-            <MapPin size={32} className="text-gold shrink-0 mt-1" />
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Local Kigali Delivery</h3>
-              <p className="opacity-80 leading-relaxed">
-                For our clients in Kigali, we offer same-day concierge delivery for orders placed before 2 PM. 
-                Alternatively, private appointments can be arranged for pick-up at our Heights Manor atelier.
-              </p>
+
+          {/* Local Kigali Delivery */}
+          <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10 hover:shadow-lg transition-shadow">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              <div className="p-4 bg-gold/10 dark:bg-antique/10 rounded-full shrink-0">
+                <MapPin size={32} className="text-gold dark:text-antique" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-serif text-2xl md:text-3xl mb-4">Local Kigali Delivery</h3>
+                <p className="opacity-80 leading-relaxed mb-4 text-base md:text-lg">
+                  For our clients in Kigali, we offer same-day concierge delivery for orders placed before 2 PM. 
+                  Alternatively, private appointments can be arranged for pick-up at our atelier located at KK 454 St., Kigali.
+                </p>
+                <div className="bg-white/50 dark:bg-ebony/50 p-4 rounded-lg">
+                  <p className="text-sm opacity-70">
+                    <strong className="text-gold dark:text-antique">Same-day delivery:</strong> Orders placed before 2:00 PM will be delivered the same day (subject to availability).
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex gap-6 items-start">
-            <RefreshCw size={32} className="text-gold shrink-0 mt-1" />
-            <div>
-              <h3 className="font-serif text-2xl mb-4">Returns & Exchanges</h3>
-              <p className="opacity-80 leading-relaxed mb-4">
-                We accept returns of unworn, unwashed, and undamaged items with original tags attached within 14 days of delivery.
-                Bespoke and made-to-measure pieces are final sale.
-              </p>
-              <p className="opacity-80 leading-relaxed">
-                To initiate a return, please contact our concierge service.
-              </p>
+
+          {/* Returns & Exchanges */}
+          <div className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-8 md:p-10 rounded-lg border border-shadow/10 dark:border-smoke/10 hover:shadow-lg transition-shadow">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              <div className="p-4 bg-gold/10 dark:bg-antique/10 rounded-full shrink-0">
+                <RefreshCw size={32} className="text-gold dark:text-antique" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-serif text-2xl md:text-3xl mb-4">Returns & Exchanges</h3>
+                <p className="opacity-80 leading-relaxed mb-6 text-base md:text-lg">
+                  We accept returns of unworn, unwashed, and undamaged items with original tags attached within 14 days of delivery.
+                  Bespoke and made-to-measure pieces are final sale.
+                </p>
+                <div className="bg-white/50 dark:bg-ebony/50 p-6 rounded-lg space-y-4">
+                  <div>
+                    <h4 className="text-sm uppercase tracking-widest mb-2 text-gold dark:text-antique">Return Policy</h4>
+                    <ul className="space-y-2 text-sm opacity-80 list-disc list-inside">
+                      <li>Items must be unworn, unwashed, and undamaged</li>
+                      <li>Original tags must be attached</li>
+                      <li>Returns accepted within 14 days of delivery</li>
+                      <li>Bespoke and made-to-measure pieces are final sale</li>
+                    </ul>
+                  </div>
+                  <div className="pt-4 border-t border-shadow/10 dark:border-smoke/10">
+                    <p className="text-sm opacity-80">
+                      To initiate a return, please contact our concierge service at{' '}
+                      <a href="mailto:couturelafleur19@gmail.com" className="text-gold dark:text-antique hover:underline">
+                        couturelafleur19@gmail.com
+                      </a>
+                      {' '}or call us at{' '}
+                      <a href="tel:+250792772202" className="text-gold dark:text-antique hover:underline">
+                        +250 792 772 202
+                      </a>.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -448,36 +602,91 @@ const Shipping = () => {
 };
 
 const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  
   const faqs = [
     {
       q: "Where are your garments made?",
-      a: "Every piece is designed in our Paris studio and hand-crafted by master artisans in our Kigali atelier, ensuring fair wages and preserving traditional craftsmanship."
+      a: "Every piece is designed in our Paris studio and hand-crafted by master artisans in our Kigali atelier, ensuring fair wages and preserving traditional craftsmanship. We take pride in supporting local artisans and maintaining the highest quality standards."
     },
     {
       q: "Do you offer made-to-measure services?",
-      a: "Yes. For our Couture pieces, we offer bespoke fitting services. Please contact our concierge to schedule a virtual or in-person consultation."
+      a: "Yes. For our Couture pieces, we offer bespoke fitting services. Please contact our concierge to schedule a virtual or in-person consultation. Our expert tailors will work with you to create a piece that fits perfectly and reflects your personal style."
     },
     {
       q: "How do I care for the silk pieces?",
-      a: "Our silk is organic and delicate. We recommend professional dry cleaning or gentle hand washing with cold water and pH-neutral soap."
+      a: "Our silk is organic and delicate. We recommend professional dry cleaning or gentle hand washing with cold water and pH-neutral soap. Always check the care label on your specific garment for detailed instructions. Store silk items in a cool, dry place away from direct sunlight."
     },
     {
       q: "What sustainable practices do you follow?",
-      a: "We operate on a made-to-order basis to minimize waste. We source local materials whenever possible and use eco-friendly dyes."
+      a: "We operate on a made-to-order basis to minimize waste. We source local materials whenever possible and use eco-friendly dyes. Our packaging is recyclable, and we're committed to reducing our carbon footprint throughout the entire production process."
+    },
+    {
+      q: "How can I track my order?",
+      a: "Once your order has been shipped, you will receive a tracking number via email. You can use this number to track your package through our shipping partner's website. For local Kigali deliveries, our concierge team will contact you directly with delivery updates."
+    },
+    {
+      q: "What payment methods do you accept?",
+      a: "We accept major credit cards, debit cards, and mobile money payments (MTN Mobile Money and Airtel Money). All transactions are secure and encrypted for your protection. We also offer payment plans for select high-value items."
+    },
+    {
+      q: "Can I cancel or modify my order?",
+      a: "Orders can be cancelled or modified within 24 hours of placement, provided the item hasn't entered production. Please contact us immediately at couturelafleur19@gmail.com or +250 792 772 202. Made-to-order items cannot be cancelled once production has begun."
+    },
+    {
+      q: "Do you ship internationally?",
+      a: "Yes, we ship worldwide! We offer complimentary express shipping on orders over $500. International shipping typically takes 3-7 business days depending on your location. All customs duties and taxes are the responsibility of the customer."
     }
   ];
 
   return (
-    <div className="pt-32 pb-20">
-      <SectionTitle subtitle="Help">Frequently Asked Questions</SectionTitle>
+    <div className="pt-24 md:pt-32 pb-20 min-h-screen">
       <Section>
-        <div className="max-w-3xl mx-auto grid gap-8">
-          {faqs.map((item, i) => (
-            <div key={i} className="border-b border-shadow/10 dark:border-smoke/10 pb-8">
-              <h3 className="font-serif text-xl mb-3">{item.q}</h3>
-              <p className="opacity-70 leading-relaxed text-sm">{item.a}</p>
+        <SectionTitle subtitle="Help">Frequently Asked Questions</SectionTitle>
+        
+        <div className="max-w-4xl mx-auto">
+          <div className="space-y-4">
+            {faqs.map((item, i) => (
+              <div 
+                key={i} 
+                className="bg-champagne/10 dark:bg-charcoal/50 rounded-lg border border-shadow/10 dark:border-smoke/10 overflow-hidden transition-all hover:shadow-lg"
+              >
+                <button
+                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                  className="w-full px-6 md:px-8 py-6 flex justify-between items-center text-left group"
+                >
+                  <h3 className="font-serif text-lg md:text-xl pr-4 group-hover:text-gold dark:group-hover:text-antique transition-colors">
+                    {item.q}
+                  </h3>
+                  <div className={`shrink-0 text-gold dark:text-antique transition-transform duration-300 ${openIndex === i ? 'rotate-180' : ''}`}>
+                    <ArrowRight size={20} className="transform rotate-90" />
+                  </div>
+                </button>
+                <div 
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openIndex === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="px-6 md:px-8 pb-6 pt-0">
+                    <p className="opacity-80 leading-relaxed text-sm md:text-base">{item.a}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-12 p-8 bg-gradient-to-br from-gold/10 to-champagne/20 dark:from-antique/10 dark:to-charcoal/30 rounded-lg border border-shadow/10 dark:border-smoke/10 text-center">
+            <h3 className="font-serif text-2xl mb-3">Still have questions?</h3>
+            <p className="opacity-80 mb-6">Our team is here to help. Reach out to us and we'll respond as soon as possible.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="mailto:couturelafleur19@gmail.com" className="inline-block">
+                <Button variant="outline">Email Us</Button>
+              </a>
+              <a href="tel:+250792772202" className="inline-block">
+                <Button>Call Us</Button>
+              </a>
             </div>
-          ))}
+          </div>
         </div>
       </Section>
     </div>
@@ -485,34 +694,157 @@ const FAQ = () => {
 };
 
 const ProductCare = () => {
+  const careCategories = [
+    {
+      title: "Silk & Satin",
+      subtitle: "Delicate Fibers",
+      icon: "✨",
+      tips: [
+        "Dry clean only is recommended to maintain the sheen and structure",
+        "If hand washing, use cold water and avoid wringing",
+        "Iron on low heat with a protective cloth",
+        "Store hanging or folded with acid-free tissue paper",
+        "Avoid direct sunlight to prevent fading"
+      ],
+      avoid: ["Bleach", "High heat", "Wringing or twisting"]
+    },
+    {
+      title: "Linen & Cotton",
+      subtitle: "Natural Fibers",
+      icon: "🌿",
+      tips: [
+        "Machine wash cold on a gentle cycle",
+        "Air dry to preserve the fiber integrity",
+        "Iron while slightly damp for best results",
+        "Linen softens with time; embrace natural wrinkles or steam for crisp look",
+        "Use mild detergent and avoid fabric softeners"
+      ],
+      avoid: ["High heat drying", "Bleach", "Hot water"]
+    },
+    {
+      title: "Brass & Jewelry",
+      subtitle: "Metals",
+      icon: "💎",
+      tips: [
+        "Keep away from water and perfumes",
+        "Polish gently with a soft cloth to restore shine",
+        "Store in a dry place, ideally in a jewelry box",
+        "Brass develops a natural patina over time which adds character",
+        "Clean with a soft, dry cloth after each wear"
+      ],
+      avoid: ["Harsh chemicals", "Abrasive cleaners", "Excessive moisture"]
+    },
+    {
+      title: "Leather",
+      subtitle: "Luxury Materials",
+      icon: "🧳",
+      tips: [
+        "Clean with a damp cloth and mild soap",
+        "Condition regularly with leather conditioner",
+        "Store in a cool, dry place away from direct sunlight",
+        "Use a leather protector spray to prevent stains",
+        "Allow to air dry naturally if wet, never use direct heat"
+      ],
+      avoid: ["Direct heat", "Harsh chemicals", "Excessive moisture"]
+    },
+    {
+      title: "Wool & Cashmere",
+      subtitle: "Luxury Knits",
+      icon: "🧶",
+      tips: [
+        "Hand wash in cold water with wool-specific detergent",
+        "Lay flat to dry on a clean towel",
+        "Store folded, never hang as it can stretch",
+        "Use cedar blocks or lavender sachets to prevent moths",
+        "Steam rather than iron when needed"
+      ],
+      avoid: ["Machine washing", "Wringing", "High heat"]
+    },
+    {
+      title: "General Tips",
+      subtitle: "For All Garments",
+      icon: "⭐",
+      tips: [
+        "Always check the care label before washing",
+        "Address stains immediately before they set",
+        "Store items in a cool, dry, well-ventilated space",
+        "Use proper hangers for structured pieces",
+        "Rotate your wardrobe to prevent over-wearing"
+      ],
+      avoid: ["Storing in plastic bags", "Over-washing", "Ignoring care labels"]
+    }
+  ];
+
   return (
-    <div className="pt-32 pb-20">
-      <SectionTitle subtitle="Longevity">Product Care</SectionTitle>
+    <div className="pt-24 md:pt-32 pb-20 min-h-screen">
       <Section>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div className="p-8 border border-shadow/10 dark:border-smoke/10 hover:border-gold transition-colors">
-            <h3 className="font-serif text-2xl mb-4">Silk & Satin</h3>
-            <p className="text-xs uppercase tracking-widest opacity-60 mb-6">Delicate Fibers</p>
-            <p className="opacity-80 text-sm leading-relaxed">
-              Dry clean only is recommended to maintain the sheen and structure. 
-              If hand washing, use cold water and avoid wringing. Iron on low heat with a protective cloth.
-            </p>
-          </div>
-          <div className="p-8 border border-shadow/10 dark:border-smoke/10 hover:border-gold transition-colors">
-            <h3 className="font-serif text-2xl mb-4">Linen & Cotton</h3>
-            <p className="text-xs uppercase tracking-widest opacity-60 mb-6">Natural Fibers</p>
-            <p className="opacity-80 text-sm leading-relaxed">
-              Machine wash cold on a gentle cycle. Air dry to preserve the fiber integrity. 
-              Linen softens with time; embrace the natural wrinkles or steam for a crisp look.
-            </p>
-          </div>
-          <div className="p-8 border border-shadow/10 dark:border-smoke/10 hover:border-gold transition-colors">
-            <h3 className="font-serif text-2xl mb-4">Brass & Jewelry</h3>
-            <p className="text-xs uppercase tracking-widest opacity-60 mb-6">Metals</p>
-            <p className="opacity-80 text-sm leading-relaxed">
-              Keep away from water and perfumes. Polish gently with a soft cloth to restore shine. 
-              Brass develops a natural patina over time which adds character.
-            </p>
+        <SectionTitle subtitle="Longevity">Product Care</SectionTitle>
+        
+        <div className="mb-12 text-center max-w-3xl mx-auto">
+          <p className="text-lg opacity-80 leading-relaxed">
+            Proper care ensures your CoutureLaFleur pieces remain beautiful for years to come. 
+            Follow these guidelines to maintain the quality and elegance of your garments.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {careCategories.map((category, index) => (
+            <div 
+              key={index}
+              className="bg-gradient-to-br from-champagne/20 to-gold/5 dark:from-charcoal/50 dark:to-charcoal/30 p-6 md:p-8 rounded-lg border border-shadow/10 dark:border-smoke/10 hover:shadow-lg transition-all group"
+            >
+              <div className="text-4xl mb-4">{category.icon}</div>
+              <h3 className="font-serif text-2xl mb-2 group-hover:text-gold dark:group-hover:text-antique transition-colors">
+                {category.title}
+              </h3>
+              <p className="text-xs uppercase tracking-widest opacity-60 mb-6">{category.subtitle}</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs uppercase tracking-widest text-gold dark:text-antique mb-3">Care Instructions</h4>
+                  <ul className="space-y-2">
+                    {category.tips.map((tip, tipIndex) => (
+                      <li key={tipIndex} className="text-sm opacity-80 leading-relaxed flex items-start gap-2">
+                        <span className="text-gold dark:text-antique mt-1">•</span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="pt-4 border-t border-shadow/10 dark:border-smoke/10">
+                  <h4 className="text-xs uppercase tracking-widest text-red-500/70 dark:text-red-400/70 mb-2">Avoid</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {category.avoid.map((item, avoidIndex) => (
+                      <span 
+                        key={avoidIndex}
+                        className="text-xs px-2 py-1 bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 p-8 md:p-10 bg-gradient-to-br from-gold/10 to-champagne/20 dark:from-antique/10 dark:to-charcoal/30 rounded-lg border border-shadow/10 dark:border-smoke/10">
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            <div className="p-4 bg-gold/10 dark:bg-antique/10 rounded-full">
+              <ShieldCheck size={32} className="text-gold dark:text-antique" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="font-serif text-2xl mb-3">Need Professional Care?</h3>
+              <p className="opacity-80 mb-4">
+                For delicate pieces or items requiring special attention, we recommend professional cleaning services. 
+                Contact us for recommendations on trusted care providers in your area.
+              </p>
+              <a href="mailto:couturelafleur19@gmail.com" className="inline-block">
+                <Button variant="outline">Contact Our Team</Button>
+              </a>
+            </div>
           </div>
         </div>
       </Section>

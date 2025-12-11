@@ -21,6 +21,7 @@
     "lucide-react": "^0.378.0",
     "mongoose": "^8.3.4",
     "node-cache": "^5.1.2",
+    "nodemailer": "^7.0.11",
     "os": "^0.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

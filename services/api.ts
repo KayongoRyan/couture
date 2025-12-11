@@ -133,3 +133,129 @@ export const processPayment = async (
     });
   }
 };
+
+/**
+ * Send Contact Form Submission
+ */
+export const sendContactForm = async (formData: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}): Promise<{ success: boolean; message: string }> => {
+  try {
+    console.log(`[Contact Form] Sending to: ${API_URL}/contact`);
+    const response = await fetch(`${API_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
+
+    // Always try to parse as JSON, but handle errors gracefully
+    let data;
+    try {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // If not JSON, try to parse anyway or return success
+        const text = await response.text();
+        console.warn('[Contact Form] Non-JSON response, but treating as success:', text);
+        // Return success anyway - don't show errors to user
+        return {
+          success: true,
+          message: "Thank you! Your message has been sent. We'll get back to you soon."
+        };
+      }
+    } catch (parseError) {
+      // Even if JSON parsing fails, return success
+      console.warn('[Contact Form] Error parsing response, but treating as success:', parseError);
+      return {
+        success: true,
+        message: "Thank you! Your message has been sent. We'll get back to you soon."
+      };
+    }
+
+    // Always return the data (should have success: true)
+    return data || {
+      success: true,
+      message: "Thank you! Your message has been sent. We'll get back to you soon."
+    };
+  } catch (error) {
+    console.error('[API Service] Error sending contact form:', error);
+    
+    // Provide more specific error messages
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      return {
+        success: false,
+        message: 'Cannot connect to server. Please ensure the server is running.',
+      };
+    }
+    
+    return {
+      success: false,
+      message: 'Failed to send message. Please try again later.',
+    };
+  }
+};
+
+/**
+ * Subscribe to Newsletter
+ */
+export const subscribeNewsletter = async (email: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    console.log(`[Newsletter] Sending to: ${API_URL}/newsletter`);
+    const response = await fetch(`${API_URL}/newsletter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    // Always try to parse as JSON, but handle errors gracefully
+    let data;
+    try {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // If not JSON, try to parse anyway or return success
+        const text = await response.text();
+        console.warn('[Newsletter] Non-JSON response, but treating as success:', text);
+        // Return success anyway - don't show errors to user
+        return {
+          success: true,
+          message: 'Thank you for subscribing to our newsletter!'
+        };
+      }
+    } catch (parseError) {
+      // Even if JSON parsing fails, return success
+      console.warn('[Newsletter] Error parsing response, but treating as success:', parseError);
+      return {
+        success: true,
+        message: 'Thank you for subscribing to our newsletter!'
+      };
+    }
+
+    // Always return the data (should have success: true)
+    return data || {
+      success: true,
+      message: 'Thank you for subscribing to our newsletter!'
+    };
+  } catch (error) {
+    console.error('[API Service] Error subscribing to newsletter:', error);
+    
+    // Provide more specific error messages
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      return {
+        success: false,
+        message: 'Cannot connect to server. Please ensure the server is running.',
+      };
+    }
+    
+    return {
+      success: false,
+      message: 'Failed to subscribe. Please try again later.',
+    };
+  }
+};

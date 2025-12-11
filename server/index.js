@@ -7,6 +7,7 @@ import os from 'os';
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 dotenv.config();
 
@@ -96,6 +97,7 @@ if (cluster.isPrimary) {
   app.use('/api/products', productRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/payment', paymentRoutes);
+  app.use('/api', contactRoutes);
 
   // Health Check
   app.get('/', (req, res) => {

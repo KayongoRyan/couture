@@ -4,6 +4,7 @@ import { NavLink, Link, useLocation } from 'react-router-dom'; // Using HashRout
 import { ShoppingBag, Menu, X, Sun, Moon, Search, User as UserIcon } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
 import { CartItem } from '../types';
+import { subscribeNewsletter } from '../services/api';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,8 @@ export const Layout: React.FC<LayoutProps> = ({ children, cartCount }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
   const location = useLocation();
 
   // Dark Mode Toggle Logic
@@ -213,10 +216,49 @@ export const Layout: React.FC<LayoutProps> = ({ children, cartCount }) => {
           <div className="flex flex-col gap-6">
             <h5 className="text-xs uppercase tracking-widest font-bold">Newsletter</h5>
             <p className="text-sm opacity-70">Join the LaFleur Society.</p>
-            <div className="flex border-b border-shadow/30 dark:border-smoke/30 pb-2">
-              <input type="email" placeholder="Email Address" className="bg-transparent w-full focus:outline-none placeholder:opacity-50 text-sm" />
-              <button className="uppercase text-xs font-bold hover:text-gold dark:hover:text-antique">Join</button>
-            </div>
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!newsletterEmail) return;
+                
+                setNewsletterStatus({ type: null, message: '' });
+                const result = await subscribeNewsletter(newsletterEmail);
+                
+                if (result.success) {
+                  setNewsletterStatus({ type: 'success', message: result.message });
+                  setNewsletterEmail('');
+                  setTimeout(() => setNewsletterStatus({ type: null, message: '' }), 5000);
+                } else {
+                  setNewsletterStatus({ type: 'error', message: result.message });
+                }
+              }}
+            >
+              <div className="flex border-b border-shadow/30 dark:border-smoke/30 pb-2">
+                <input 
+                  type="email" 
+                  placeholder="Email Address" 
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  className="bg-transparent w-full focus:outline-none placeholder:opacity-50 text-sm" 
+                  required
+                />
+                <button 
+                  type="submit"
+                  className="uppercase text-xs font-bold hover:text-gold dark:hover:text-antique transition-colors"
+                >
+                  Join
+                </button>
+              </div>
+              {newsletterStatus.type && (
+                <p className={`text-xs mt-2 ${
+                  newsletterStatus.type === 'success' 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : 'text-red-600 dark:text-red-400'
+                }`}>
+                  {newsletterStatus.message}
+                </p>
+              )}
+            </form>
             <div className="flex gap-4 justify-center md:justify-start mt-4 opacity-60">
                {/* Social placeholders */}
                <span className="cursor-pointer hover:text-gold">IG</span>
