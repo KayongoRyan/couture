@@ -104,36 +104,63 @@ const ProductList: React.FC<ProductListProps> = ({ category }) => {
   }
 
   return (
-    <div className="pt-20">
-       {recommendations.length > 0 && !category && (
-          <Section className="pb-0">
-             <div className="mb-12 text-center">
-                <span className="text-xs font-sans tracking-[0.2em] uppercase text-gold dark:text-antique mb-2 block">Curated For You</span>
-                <h2 className="font-serif text-3xl md:text-4xl">Trending & Recommended</h2>
-             </div>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {recommendations.map(product => (
-                   <Link to={`/product/${product.id}`} key={product.id} className="group relative">
-                      <div className="relative overflow-hidden aspect-[3/4] mb-4">
-                         <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                         <div className="absolute top-2 right-2 bg-gold/90 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                            Most Loved
-                         </div>
-                      </div>
-                      <h3 className="font-serif text-xl">{product.name}</h3>
-                      <p className="text-sm opacity-60">${product.price}</p>
-                   </Link>
-                ))}
-             </div>
-             <div className="w-full h-px bg-shadow/10 dark:bg-smoke/10 mt-20"></div>
-          </Section>
-       )}
-
+    <div className="pt-10 md:pt-12">
        <Section>
-         <SectionTitle subtitle={category ? "Selection" : "Latest Arrivals"}>{getTitle()}</SectionTitle>
-         {products.length === 0 ? (
-           <div className="text-center py-20 opacity-60">
-             <p className="font-serif text-xl">New pieces arriving soon for this collection.</p>
+        <SectionTitle subtitle={category ? "Selection" : "Latest Arrivals"}>{getTitle()}</SectionTitle>
+        {products.length === 0 ? (
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+              {[
+                {
+                  name: 'Noir Velvet Gown',
+                  price: 2400,
+                  image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=800&q=80',
+                  id: '5',
+                  category: 'women'
+                },
+                {
+                  name: 'Nyanza Linen Suit',
+                  price: 1100,
+                  image: 'https://images.unsplash.com/photo-1507680434567-5739c80be1ac?auto=format&fit=crop&w=800&q=80',
+                  id: '7',
+                  category: 'men'
+                },
+                {
+                  name: 'Kivu Leather Weekender',
+                  price: 950,
+                  image: 'https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=800&q=80',
+                  id: '9',
+                  category: 'accessories'
+                }
+              ].map(product => (
+                 <div key={product.id} className="group cursor-pointer relative">
+                    <Link to={`/product/${product.id}`}>
+                      <div className="relative overflow-hidden mb-6 aspect-[3/4]">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <button 
+                          onClick={(e) => toggleLike(e, product.id)}
+                          className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all z-20"
+                        >
+                          <Heart 
+                            size={18} 
+                            fill={likedItems.includes(product.id) ? "#ef4444" : "none"} 
+                            stroke={likedItems.includes(product.id) ? "#ef4444" : "white"}
+                            className="transition-all"
+                          />
+                        </button>
+                      </div>
+                      <div className="flex justify-between items-baseline">
+                        <h3 className="font-serif text-2xl group-hover:text-gold transition-colors">{product.name}</h3>
+                        <span className="text-sm font-medium opacity-60">${product.price}</span>
+                      </div>
+                      <p className="text-xs uppercase tracking-widest opacity-50 mt-1">{product.category}</p>
+                    </Link>
+                 </div>
+              ))}
            </div>
          ) : (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
@@ -148,9 +175,14 @@ const ProductList: React.FC<ProductListProps> = ({ category }) => {
                         />
                         <button 
                           onClick={(e) => toggleLike(e, product.id)}
-                          className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all text-white z-20"
+                          className="absolute top-4 right-4 p-2 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all z-20"
                         >
-                          <Heart size={18} fill={likedItems.includes(product.id) ? "white" : "none"} />
+                          <Heart 
+                            size={18} 
+                            fill={likedItems.includes(product.id) ? "#ef4444" : "none"} 
+                            stroke={likedItems.includes(product.id) ? "#ef4444" : "white"}
+                            className="transition-all"
+                          />
                         </button>
 
                         {product.isNew && (
@@ -1187,12 +1219,59 @@ const App: React.FC = () => {
           <Route path="/" element={
             <>
               <Hero />
-              <Section>
+              <Section className="pb-10 md:pb-14">
                 <div className="text-center max-w-2xl mx-auto">
                   <h3 className="font-serif text-3xl italic mb-6">"Fashion is the armor to survive the reality of everyday life."</h3>
                   <p className="text-xs uppercase tracking-widest opacity-60">— Bill Cunningham</p>
                 </div>
               </Section>
+              
+              {/* Curated For You Section */}
+              <Section className="pt-10 md:pt-14 pb-16 md:pb-20">
+                <div className="text-center mb-16">
+                  <span className="text-xs font-sans tracking-[0.2em] uppercase text-gold dark:text-antique mb-4 block">Curated For You</span>
+                  <h2 className="font-serif text-4xl md:text-5xl mb-4">Trending & Recommended</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                  {[
+                    {
+                      name: 'The Kigali Trench',
+                      price: 850,
+                      image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80',
+                      id: '1'
+                    },
+                    {
+                      name: 'Silk Ébène Dress',
+                      price: 1200,
+                      image: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=800&q=80',
+                      id: '2'
+                    },
+                    {
+                      name: 'Savannah Blazer',
+                      price: 920,
+                      image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=800&q=80',
+                      id: '4'
+                    }
+                  ].map((product) => (
+                    <Link to={`/product/${product.id}`} key={product.id} className="group">
+                      <div className="relative overflow-hidden aspect-[3/4] mb-6 rounded-lg">
+                        <img 
+                          src={product.image} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute top-4 right-4 bg-gold/90 text-white text-[10px] font-bold px-3 py-1.5 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          Featured
+                        </div>
+                      </div>
+                      <h3 className="font-serif text-xl md:text-2xl mb-2 group-hover:text-gold dark:group-hover:text-antique transition-colors">{product.name}</h3>
+                      <p className="text-lg font-medium text-gold dark:text-antique">${product.price}</p>
+                    </Link>
+                  ))}
+                </div>
+              </Section>
+              
               <ProductList />
             </>
           } />

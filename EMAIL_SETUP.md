@@ -77,3 +77,8 @@ GMAIL_APP_PASSWORD=your-app-password-here
 - Configure SMTP credentials to send real emails
 
 
+
+
+
+
+
